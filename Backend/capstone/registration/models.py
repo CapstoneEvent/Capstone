@@ -7,8 +7,11 @@ from django.dispatch import receiver
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     phone = models.TextField(max_length=500, blank=True)
-    status = models.BooleanField(blank=True)
+    status = models.IntegerField(blank=True, null=True)
     verified_at = models.DateField(null=True, blank=True)
+
+    class Meta:
+        db_table = "profile"
 
 
 @receiver(post_save, sender=User)
