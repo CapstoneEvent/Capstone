@@ -1,8 +1,9 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { Container } from "react-bootstrap";
+import './App.css';
 import Nav from "./components/Nav";
+import Register from "./components/Register";
 import Login from "./components/Login";
-import SignUp from "./components/SignUp";
 
 function App() {
   return (
@@ -10,7 +11,7 @@ function App() {
       <Nav />
       <Container>
         <Routes>
-          <Route path="/signup" element={<SignUp />} />
+          <Route path="/signup" element={<Register />} />
           <Route path="/login" element={<Login />} />
         </Routes>
       </Container>
