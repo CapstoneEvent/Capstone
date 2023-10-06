@@ -6,7 +6,7 @@ from django.dispatch import receiver
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    phone = models.TextField(max_length=500, blank=True)
+    phone = models.TextField(max_length=20, blank=True)
     status = models.IntegerField(blank=True, null=True)
     verified_at = models.DateField(null=True, blank=True)
 
