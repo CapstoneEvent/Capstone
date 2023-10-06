@@ -75,6 +75,10 @@ INSTALLED_APPS = [
     "knox",
     "registration",
     "api",
+    "booking",
+    "event",
+    "kanban",
+    "sponsor",
 ]
 
 MIDDLEWARE = [
