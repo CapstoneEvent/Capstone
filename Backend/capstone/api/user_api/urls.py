@@ -8,4 +8,8 @@ urlpatterns = [
     path("register", views.registration_api),
     path("profile_update", views.update_profile),
     path("change_password", views.change_password),
+    path('verify_email', views.verify_email),
+    path('forgot_password', views.forgot_password),
+    path('validate_token', views.validate_token),
+    path('update_password', views.update_password),
 ]

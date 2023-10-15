@@ -8,7 +8,7 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     phone = models.TextField(max_length=20, blank=True)
     status = models.PositiveSmallIntegerField(blank=True, null=True)
-    verified_at = models.DateField(null=True, blank=True)
+    verified_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         db_table = "profile"
@@ -23,3 +23,12 @@ def create_user_profile(sender, instance, created, **kwargs):
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
     instance.profile.save()
+
+class Token(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    token = models.TextField(max_length=20, blank=True)
+    status = models.PositiveSmallIntegerField(default=1)
+    valid_till = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        db_table = "token"
