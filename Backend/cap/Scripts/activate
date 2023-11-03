@@ -37,7 +37,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="E:\Capstone\Backend\cap"
+VIRTUAL_ENV="C:\E\Capstone\Backend\cap"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"
