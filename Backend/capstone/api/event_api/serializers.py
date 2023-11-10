@@ -18,27 +18,30 @@ class EventUserSerializer(serializers.ModelSerializer):
 class EventSerializer(serializers.ModelSerializer):
     event_user = EventUserSerializer(source='event_user_set', many=True, read_only=True)
     user = UserSerializer(read_only=True, many=True)
-
     class Meta:
         model = Event
         fields = (
-            'slug', 'name', 'cover_picture', 'description',
+            'slug','name', 'cover_picture', 'description',
             'start_date', 'end_date', 'available_seats',
-            'price', 'status', 'user',
+            'price', 'status', 'event_user', 'user'
         )
         extra_kwargs = {
             'cover_picture': {'required': False},
+            'slug': {'required': False},
         }
 
     def create(self, validated_data):
         user = self.context['request'].user
-        event = Event.objects.create(**validated_data, user=user)
+        event = Event(**validated_data)
+        event.save() 
+        
+        event.user.add(user)  
 
         slug = slugify(event.name)
         unique_slug = slug
         num = 1
         while Event.objects.filter(slug=unique_slug).exists():
-            unique_slug = '{}-{}'.format(slug, num)
+            unique_slug = f'{slug}-{num}'
             num += 1
 
         event.slug = unique_slug
@@ -62,9 +65,15 @@ class EventSerializer(serializers.ModelSerializer):
                 unique_slug = slug
                 num = 1
                 while Event.objects.filter(slug=unique_slug).exists():
-                    unique_slug = '{}-{}'.format(slug, num)
+                    unique_slug = f'{slug}-{num}'
                     num += 1
                 instance.slug = unique_slug
+        
+        instance.save()
 
+        if 'user' in validated_data:
+            user_ids = [user_data['id'] for user_data in validated_data['user']]
+            instance.user.set(User.objects.filter(id__in=user_ids))
+        
         instance.save()
         return instance

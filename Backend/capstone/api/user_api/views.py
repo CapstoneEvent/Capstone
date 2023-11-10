@@ -14,6 +14,8 @@ from datetime import datetime
 from django.conf import settings
 from django.utils.timezone import now
 from .mail import verification_token, send_verification_email, send_password_email
+import json
+from django.http import JsonResponse
 
 @api_view(["GET"])
 def test(request):
@@ -124,6 +126,7 @@ def change_password(request):
 
 @api_view(["GET"])
 def verify_email(request):
+    data = json.loads(request.body)
     token = request.GET.get('token')
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
@@ -139,62 +142,93 @@ def verify_email(request):
     except User.DoesNotExist:
         return JsonResponse({"status": False, "message": "User does not exist"})
     
+# @api_view(["POST"])
+# def forgot_password(request):
+#     email = request.POST.get('email')
+#     if email:
+#         try:
+#             user = User.objects.get(email=email)
+#             chars = string.ascii_uppercase + string.digits
+#             token = ''.join(random.choice(chars) for _ in range(6))
+#             send_password_email(user, token)
+#             return JsonResponse({"status": True, "message": "Email sent successfully"})
+#         except User.DoesNotExist:
+#             return JsonResponse({"status": False, "message": 'User not found'})
+#     else:
+#         return JsonResponse({"status": False, "message": 'Email parameter not provided'})
+
 @api_view(["POST"])
 def forgot_password(request):
-    email = request.POST.get('email')
-    if email:
-        try:
-            user = User.objects.get(email=email)
-            chars = string.ascii_uppercase + string.digits
-            token = ''.join(random.choice(chars) for _ in range(6))
-            send_password_email(user, token)
-            return JsonResponse({"status": True, "message": "Email sent successfully"})
-        except User.DoesNotExist:
-            return JsonResponse({"status": False, "message": 'User not found'})
-    else:
-        return JsonResponse({"status": False, "message": 'Email parameter not provided'})
+    try:
+        data = json.loads(request.body)
+        email = data.get('email')
+
+        if email:
+            # Rest of your code remains unchanged
+            try:
+                user = User.objects.get(email=email)
+                chars = string.ascii_uppercase + string.digits
+                token = ''.join(random.choice(chars) for _ in range(6))
+                send_password_email(user, token)
+                return JsonResponse({"status": True, "message": "Email sent successfully"})
+            except User.DoesNotExist:
+                return JsonResponse({"status": False, "message": 'User not found'})
+        else:
+            return JsonResponse({"status": False, "message": 'Email parameter not provided'})
+    except json.JSONDecodeError:
+        return JsonResponse({"status": False, "message": 'Invalid JSON data'})
     
 @api_view(["POST"])
 def validate_token(request):
-    token = request.POST.get('token')
-    if token:
-        try:
-            token_model = Token.objects.get(token=token)
-            current_datetime = now()
-            if current_datetime < token_model.valid_till:
-                return JsonResponse({"status": True, "message": 'Valid Token'})
-            else:
-                return JsonResponse({"status": False, "message": 'Token Expired'})
-        except User.DoesNotExist:
-            return JsonResponse({"status": False, "message": 'Invalid Token'})
-    else:
-        return JsonResponse({"status": False, "message": 'Token Required'})
+    try:
+        data = json.loads(request.body)
+        token = data.get('token')
+
+        if token:
+            try:
+                token_model = Token.objects.get(token=token)
+                current_datetime = now()
+                if current_datetime < token_model.valid_till:
+                    return JsonResponse({"status": True, "message": 'Valid Token'})
+                else:
+                    return JsonResponse({"status": False, "message": 'Token Expired'})
+            except Token.DoesNotExist:
+                return JsonResponse({"status": False, "message": 'Invalid Token'})
+        else:
+            return JsonResponse({"status": False, "message": 'Token Required'})
+    except json.JSONDecodeError:
+        return JsonResponse({"status": False, "message": 'Invalid JSON data'})
     
 @api_view(["POST"])
 def update_password(request):
-    token = request.POST.get('token')
-    new_password = request.POST.get('password')
-    
-    if not token:
-        return JsonResponse({"status": False, "message": 'Token Required'})
-
-    if not new_password:
-        return JsonResponse({"status": False, "message": 'New password is required'})
-
     try:
-        token_model = Token.objects.get(token=token)
-        current_datetime = now()
-        
-        if current_datetime >= token_model.valid_till:
-            return JsonResponse({"status": False, "message": 'Token Expired'})
+        data = json.loads(request.body)
+        token = data.get('token')
+        new_password = data.get('password')
 
-        user = token_model.user
-        user.set_password(new_password)
-        user.save()
+        if not token:
+            return JsonResponse({"status": False, "message": 'Token Required'})
 
-        token_model.delete()
+        if not new_password:
+            return JsonResponse({"status": False, "message": 'New password is required'})
 
-        return JsonResponse({"status": True, "message": 'Password updated successfully'})
+        try:
+            token_model = Token.objects.get(token=token)
+            current_datetime = now()
 
-    except Token.DoesNotExist:
-        return JsonResponse({"status": False, "message": 'Invalid Token'})
+            if current_datetime >= token_model.valid_till:
+                return JsonResponse({"status": False, "message": 'Token Expired'})
+
+            user = token_model.user
+            user.set_password(new_password)
+            user.save()
+
+            token_model.delete()
+
+            return JsonResponse({"status": True, "message": 'Password updated successfully'})
+
+        except Token.DoesNotExist:
+            return JsonResponse({"status": False, "message": 'Invalid Token'})
+
+    except json.JSONDecodeError:
+        return JsonResponse({"status": False, "message": 'Invalid JSON data'})

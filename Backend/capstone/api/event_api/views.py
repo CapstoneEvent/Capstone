@@ -22,7 +22,7 @@ def event_list_create(request):
         }, status=200)
 
     elif request.method == 'POST':
-        serializer = EventSerializer(data=request.data)
+        serializer = EventSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response({
