@@ -1,7 +1,8 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from event.models import Event
+from event.models import Event, Event_User
 from .serializers import EventSerializer
+from django.contrib.auth.models import User
 from api.user_api.decorators import require_authenticated_and_valid_token as valid_token
 
 @api_view(["GET"])
@@ -78,3 +79,30 @@ def event_detail(request, slug):
             "message": "Event deleted successfully",
             "data": None
         }, status=204)
+    
+
+@api_view(['POST'])
+@valid_token
+def add_user_to_event(request, event_slug):
+    email = request.data.get('email')
+    if not email:
+        return Response({"status": False, "message": "Email is required."}, status=400)
+
+    try:
+        event = Event.objects.get(slug=event_slug)
+    except Event.DoesNotExist:
+        return Response({"status": False, "message": "Event not found."}, status=404)
+
+    if request.user != event.user:
+        return Response({"status": False, "message": "Unauthorized: You did not create this event."}, status=403)
+
+    try:
+        user = User.objects.get(email=email)
+    except User.DoesNotExist:
+        return Response({"status": False, "message": "User not found."}, status=404)
+
+    if Event_User.objects.filter(event=event, user=user).exists():
+        return Response({"status": False, "message": "User already added to the event."}, status=400)
+
+    Event_User.objects.create(event=event, user=user)
+    return Response({"status": True, "message": "User added to event successfully."}, status= 200)
