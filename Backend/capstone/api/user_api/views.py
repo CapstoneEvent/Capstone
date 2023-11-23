@@ -141,21 +141,7 @@ def verify_email(request):
         return JsonResponse({"status": False, "message": "Invalid token"})
     except User.DoesNotExist:
         return JsonResponse({"status": False, "message": "User does not exist"})
-    
-# @api_view(["POST"])
-# def forgot_password(request):
-#     email = request.POST.get('email')
-#     if email:
-#         try:
-#             user = User.objects.get(email=email)
-#             chars = string.ascii_uppercase + string.digits
-#             token = ''.join(random.choice(chars) for _ in range(6))
-#             send_password_email(user, token)
-#             return JsonResponse({"status": True, "message": "Email sent successfully"})
-#         except User.DoesNotExist:
-#             return JsonResponse({"status": False, "message": 'User not found'})
-#     else:
-#         return JsonResponse({"status": False, "message": 'Email parameter not provided'})
+
 
 @api_view(["POST"])
 def forgot_password(request):

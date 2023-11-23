@@ -1,6 +1,7 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from sponsor.models import Sponsor
+from event.models import Event, Event_User
 from .serializers import SponsorSerializer
 from api.user_api.decorators import require_authenticated_and_valid_token as valid_token
 
@@ -38,11 +39,27 @@ def sponsor_detail(request, slug):
 
     elif request.method == 'PUT':
         serializer = SponsorSerializer(sponsor, data=request.data, context={'request': request})
-        if serializer.is_valid():
-            serializer.save()
-            return Response({"status": True, "message": "Sponsor updated successfully.", "data": serializer.data})
-        return Response({"status": False, "message": "Sponsor update failed.", "data": serializer.errors}, status=400)
+        if(check_user(request, sponsor.event)):
+            if serializer.is_valid():
+                serializer.save()
+                return Response({"status": True, "message": "Sponsor updated successfully.", "data": serializer.data})
+            return Response({"status": False, "message": "Sponsor update failed.", "data": serializer.errors}, status=400)
 
     elif request.method == 'DELETE':
-        sponsor.delete()
-        return Response({"status": True, "message": "Sponsor deleted successfully."}, status=204)
+        if(check_user(request, sponsor.event)):
+            sponsor.delete()
+            return Response({"status": True, "message": "Sponsor deleted successfully."}, status=204)
+    
+
+def check_user(request, event):
+    try:
+        event = Event.objects.get(id=event)
+        user = request.user
+        is_user_related = Event_User.objects.filter(event=event, user=user).exists()
+    except Event.DoesNotExist:
+        return Response({"error": "Event not found"}, status=404)
+
+    if is_user_related:
+        return True
+    else:
+        return False

@@ -4,12 +4,17 @@ from sponsor.models import Sponsor
 from event.models import Event
 
 class EventSlugRelatedField(serializers.SlugRelatedField):
-    def get_queryset(self):
+    def to_internal_value(self, data):
         request = self.context.get('request', None)
-        queryset = super(EventSlugRelatedField, self).get_queryset()
-        if not request or not queryset:
-            return None
-        return queryset.filter(user=request.user)
+        if request:
+            slug = data
+            try:
+                event = Event.objects.get(slug=slug, user=request.user)
+                return event
+            except Event.DoesNotExist:
+                raise serializers.ValidationError(f"Event with slug '{slug}' does not exist.")
+        else:
+            raise serializers.ValidationError("Request is not available in the context.")
 
 class SponsorSerializer(serializers.ModelSerializer):
     event = EventSlugRelatedField(
@@ -19,7 +24,7 @@ class SponsorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Sponsor
-        fields = ('id', 'event', 'slug', 'name', 'logo', 'description', 'amount_sponsored', 'sponsor_level')
+        fields = ('event', 'slug', 'name', 'logo', 'description', 'amount_sponsored', 'sponsor_level')
 
     def validate_name(self, value):
         if 'name' in self.initial_data and self.instance and self.instance.name != value:

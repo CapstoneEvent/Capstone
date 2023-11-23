@@ -18,7 +18,7 @@ def booking_list_create(request):
         return Response({"status": True, "message": "Booking list retrieved.", "data": serializer.data})
 
     elif request.method == 'POST':
-        serializer = BookingSerializer(data=request.data)
+        serializer = BookingSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response({"status": True, "message": "Booking created.", "data": serializer.data}, status=201)
