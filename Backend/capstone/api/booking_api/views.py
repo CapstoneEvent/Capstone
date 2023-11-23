@@ -32,6 +32,9 @@ def booking_detail(request, id):
     except Booking.DoesNotExist:
         return Response({"status": False, "message": "Booking not found.", "data": None}, status=404)
 
+    if request.user != booking.user:
+        return Response({"status": False, "message": "Unauthorized access.", "data": None}, status=403)
+
     if request.method == 'GET':
         serializer = BookingSerializer(booking)
         return Response({"status": True, "message": "Booking retrieved.", "data": serializer.data})
