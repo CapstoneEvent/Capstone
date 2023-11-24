@@ -9,6 +9,11 @@ class EventSlugField(serializers.SlugRelatedField):
         except Event.DoesNotExist:
             raise serializers.ValidationError(f"Event with slug '{data}' does not exist.")
 
+class EventSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Event
+        fields = ['name']
+        
 class BookingSerializer(serializers.ModelSerializer):
     event = EventSlugField(queryset=Event.objects.all(), slug_field='slug')
     user = serializers.PrimaryKeyRelatedField(read_only=True)

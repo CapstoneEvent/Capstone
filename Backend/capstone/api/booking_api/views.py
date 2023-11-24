@@ -20,6 +20,7 @@ def booking_list_create(request):
         elif user_profile_status == 1:
             events = Event.objects.filter(user=request.user)
             bookings = Booking.objects.filter(event__in=events)
+
         elif user_profile_status == 2:
             bookings = Booking.objects.filter(user=request.user)
         else:

@@ -33,9 +33,11 @@ const BookingPage = () => {
         <ul>
           {bookings.map((booking) => (
             <li key={booking.id}>
-              <p>Event: {booking.eventName}</p>
+              <p>Event: {booking.event}</p>
               <p>Quantity: {booking.quantity}</p>
+              <p>Total: CAD {booking.total}</p>
               {/* Add more details as needed */}
+              <hr></hr>
             </li>
           ))}
         </ul>
