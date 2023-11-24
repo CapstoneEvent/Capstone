@@ -11,6 +11,7 @@ class EventSlugField(serializers.SlugRelatedField):
 
 class BookingSerializer(serializers.ModelSerializer):
     event = EventSlugField(queryset=Event.objects.all(), slug_field='slug')
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = Booking
