@@ -1,6 +1,8 @@
 // EventDetailsPage.js
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const EventDetailsPage = () => {
   const { slug } = useParams();
@@ -28,18 +30,18 @@ const EventDetailsPage = () => {
 
   const handleBuyTickets = async () => {
     try {
-      const response = await fetch(`/booking/${slug}`, {
+      const response = await fetch(`/booking/bookings/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ quantity }),
+        body: JSON.stringify({ total: quantity * event.price, event: slug, quantity }),
       });
 
       if (response.ok) {
-        // Show toast or any other notification on success
-        alert("Tickets purchased successfully!");
+        toast.success("Tickets purchased successfully!");
       } else {
+        toast.success(response.statusText);
         console.error("Error purchasing tickets:", response.statusText);
       }
     } catch (error) {
@@ -80,6 +82,7 @@ const EventDetailsPage = () => {
           </button>
         </div>
       </div>
+      <ToastContainer />
     </div>
   );
 };

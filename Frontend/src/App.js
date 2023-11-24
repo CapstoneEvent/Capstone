@@ -13,6 +13,7 @@ import Navbar from "./components/Navbar";
 import KanbanBoard from "./components/KanbanBoard";
 import EventDetailsPage from "./pages/EventDetailsPage";
 import EventListPage from "./pages/EventListPage";
+import BookingPage from "./pages/BookingPage";
 
 function App() {
   const { user } = useAuthContext();
@@ -26,9 +27,12 @@ function App() {
             <Route path="/" element={user ? <Home /> : <Navigate to="/login" />} />
             <Route path="/my-account" element={user ? <AccountPage /> : ""} />
             <Route path="/kanban" element={user ? <KanbanBoard /> : ""} />
-            <Route path="/events" element={user ? <EventList /> : ""} />
-            <Route path="/events2" element={user ? <EventListPage /> : ""} />
-            <Route path="/events2/:slug" element={user ? <EventDetailsPage /> : ""} />
+            <Route path="/bookings" element={user ? <BookingPage /> : ""} />
+            <Route
+              path="/events"
+              element={user && user?.status === 2 ? <EventListPage /> : user ? <EventList /> : null}
+            />
+            <Route path="/events/:slug" element={user ? <EventDetailsPage /> : ""} />
             <Route path="/login" element={!user ? <Login /> : <Navigate to="/" />} />
             <Route path="/signup" element={!user ? <Signup /> : <Navigate to="/" />} />
             <Route path="/forgotpassword" element={!user ? <PasswordRecoveryForm /> : <Navigate to="/" />} />

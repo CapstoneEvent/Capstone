@@ -12,7 +12,7 @@ const EventCard = ({ event }) => {
   };
 
   return (
-    <Link to={`/events2/${event.slug}`}>
+    <Link to={`/events/${event.slug}`}>
       <div class="card hover:shadow-lg">
         <img
           src={`https://api.ellecanada.com/app/uploads/2023/07/canada-music-festivals.jpg`}
