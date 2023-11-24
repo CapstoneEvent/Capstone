@@ -47,6 +47,7 @@ def get_user_data(request):
             "username": user.username,
             "email": user.email,
             "phone": profile.phone,
+            "status": profile.status
         },
     }
 
