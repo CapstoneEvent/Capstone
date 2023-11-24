@@ -14,7 +14,10 @@ def test(request):
 @valid_token
 def event_list_create(request):
     if request.method == 'GET':
-        events = Event.objects.all()
+        if request.user.profile.status == 1:
+            events = Event.objects.filter(user=request.user)
+        else:
+            events = Event.objects.all()
         serializer = EventSerializer(events, many=True)
         return Response({
             "status": True,

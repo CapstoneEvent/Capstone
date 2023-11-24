@@ -1,6 +1,7 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from booking.models import Booking
+from event.models import Event
 from .serializers import BookingSerializer
 from api.user_api.decorators import require_authenticated_and_valid_token as valid_token
 
@@ -13,7 +14,16 @@ def test(request):
 @valid_token
 def booking_list_create(request):
     if request.method == 'GET':
-        bookings = Booking.objects.all()
+        user_profile_status = request.user.profile.status
+        if user_profile_status == 0:
+            bookings = Booking.objects.all()
+        elif user_profile_status == 1:
+            events = Event.objects.filter(user=request.user)
+            bookings = Booking.objects.filter(event__in=events)
+        elif user_profile_status == 2:
+            bookings = Booking.objects.filter(user=request.user)
+        else:
+            bookings = Booking.objects.none()
         serializer = BookingSerializer(bookings, many=True)
         return Response({"status": True, "message": "Booking list retrieved.", "data": serializer.data})
 
