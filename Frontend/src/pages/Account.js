@@ -7,9 +7,12 @@ const AccountPage = () => {
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
 
   useEffect(() => {
-    // Fetch user details when the component mounts
-    fetchUserDetails();
-  }, []);
+    // Fetch user details only when the modal is closed
+    if (!showChangePasswordModal) {
+      console.log("hit?");
+      fetchUserDetails();
+    }
+  }, [showChangePasswordModal]); // Only re-run the effect if showChangePasswordModal changes
 
   const fetchUserDetails = async () => {
     try {
@@ -20,21 +23,20 @@ const AccountPage = () => {
         setLoading(false);
       } else {
         console.error("Error fetching user details:", response.statusText);
-        setLoading(false); // Set loading to false even in case of an error
+        setLoading(false);
       }
     } catch (error) {
-      console.error("Network error:", error, "asd");
-      setLoading(false); // Set loading to false in case of a network error
+      console.error("Network error:", error);
+      setLoading(false);
     }
   };
 
-  const handleStartChangePassword = () => {
-    console.log("hits");
+  const handleStartChangePassword = (e) => {
+    e.preventDefault();
     setShowChangePasswordModal(true);
   };
 
   const handleCloseChangePasswordModal = () => {
-    console.log("jits");
     setShowChangePasswordModal(false);
   };
 
@@ -62,7 +64,7 @@ const AccountPage = () => {
           <label>Username:</label>
           <input type="text" value={userData.username} disabled />
         </div>
-        <button onClick={handleStartChangePassword}>Change Password</button>
+        <button onClick={(e) => handleStartChangePassword(e)}>Change Password</button>
       </form>
       {showChangePasswordModal && (
         <div className="modal-overlay">

@@ -6,6 +6,11 @@ export default {
       colors: {
         mainBackgroundColor: "#0D1117",
         columnBackgroundColor: "#161C22",
+        primary: "#FF6363",
+        secondary: {
+          100: "#E2E2D5",
+          200: "#888883",
+        },
       },
     },
   },
