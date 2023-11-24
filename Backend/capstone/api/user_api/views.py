@@ -32,7 +32,9 @@ def login_api(request):
     _, token = AuthToken.objects.create(user)
 
     data = {"status": True, "message": "Login Successfull", "data": {"token": token}}
-    return Response(data, status=200)
+    response = Response(data, status=200)
+    response.set_cookie('auth_token', token, httponly=True, secure=True, samesite='None', max_age=7*24*60*60)
+    return response
 
 @valid_token
 @api_view(["GET"])

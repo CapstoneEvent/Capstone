@@ -14,7 +14,7 @@ class BookingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Booking
-        fields = ['event', 'quantity', 'total', 'status']
+        fields = ['event', 'quantity', 'total', 'status', 'user']
 
     def validate_quantity(self, value):
         if value <= 0:
