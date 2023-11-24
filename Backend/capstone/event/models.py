@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 class Event(models.Model):
     slug = models.SlugField(unique=True)
     name = models.CharField(max_length=200)
-    cover_picture = models.ImageField(upload_to='event/images/uploads')
+    cover_picture = models.ImageField(upload_to='media/images/uploads')
     description = models.TextField()
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()

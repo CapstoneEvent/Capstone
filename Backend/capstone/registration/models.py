@@ -7,7 +7,7 @@ from django.dispatch import receiver
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     phone = models.TextField(max_length=20, blank=True)
-    status = models.PositiveSmallIntegerField(blank=True, null=True)
+    status = models.PositiveSmallIntegerField(default=2, null=True)
     verified_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
