@@ -86,6 +86,7 @@ INSTALLED_APPS = [
     "event",
     "kanban",
     "sponsor",
+    "booking_verification",
 ]
 
 MIDDLEWARE = [

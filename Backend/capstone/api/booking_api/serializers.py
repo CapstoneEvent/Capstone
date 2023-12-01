@@ -1,6 +1,14 @@
 from rest_framework import serializers
 from booking.models import Booking
+from booking_verification.models import Booking_Verification
 from event.models import Event
+from datetime import timedelta
+from django.utils import timezone
+import secrets
+import qrcode
+from io import BytesIO
+from django.core.mail import EmailMessage
+from django.conf import settings
 
 class EventSlugField(serializers.SlugRelatedField):
     def to_internal_value(self, data):
@@ -36,7 +44,39 @@ class BookingSerializer(serializers.ModelSerializer):
         validated_data['total'] = total
         validated_data['user'] = user
 
-        return Booking.objects.create(**validated_data)
+        booking = Booking.objects.create(**validated_data)
+
+        token = secrets.token_urlsafe(10)
+
+        if booking.event.end_date:
+            valid_till = booking.event.end_date
+        else:
+            valid_till = timezone.now() + timedelta(days=365)
+
+        Booking_Verification.objects.create(
+            booking=booking,
+            token=token,
+            valid_till=valid_till,
+            status=0
+        )
+
+        qr = qrcode.make(token)
+
+        buffer = BytesIO()
+        qr.save(buffer)
+        buffer.seek(0)
+
+        user_email = user.email
+        email = EmailMessage(
+            'Your Booking Confirmation',
+            'Here is your booking QR Code. Please bring this to the event.',
+            settings.DEFAULT_FROM_EMAIL,
+            [user_email]
+        )
+        email.attach('booking_qr.png', buffer.getvalue(), 'image/png')
+        email.send()
+
+        return booking
 
     def update(self, instance, validated_data):
         instance.quantity = validated_data.get('quantity', instance.quantity)
