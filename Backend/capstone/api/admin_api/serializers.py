@@ -11,16 +11,15 @@ from django.contrib.auth.models import User
 import secrets
 from django.utils import timezone
 from datetime import timedelta
+from django.db import transaction
 
 class UserSerializer(serializers.ModelSerializer):
     profile = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'password', 'first_name', 'last_name', 'profile']
-        extra_kwargs = {
-            'password': {'write_only': True} 
-        }
+        fields = ['id', 'username', 'email', 'profile']
+
     def get_profile(self, obj):
         profile = Profile.objects.get(user=obj)
         return {
@@ -41,16 +40,23 @@ class UserWithProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'first_name', 'last_name', 'profile']
+        fields = ['username', 'email', 'password', 'first_name', 'last_name', 'profile']
+        extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
         profile_data = validated_data.pop('profile')
-        password = validated_data.pop('password')
-        user = User(**validated_data)
-        user.set_password(password)
+        user = User(**{k: v for k, v in validated_data.items() if k != 'password'})
+
+        password = validated_data.get('password')
+        if password:
+            user.set_password(password)
         user.save()
 
-        Profile.objects.create(user=user, **profile_data)
+        profile, created = Profile.objects.get_or_create(user=user)
+        for attr, value in profile_data.items():
+            setattr(profile, attr, value)
+        profile.save()
+
         return user
 
     def update(self, instance, validated_data):
@@ -61,6 +67,7 @@ class UserWithProfileSerializer(serializers.ModelSerializer):
         instance.email = validated_data.get('email', instance.email)
         if password:
             instance.set_password(password)
+
         instance.save()
 
         if profile_data is not None:
