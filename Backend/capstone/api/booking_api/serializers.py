@@ -5,9 +5,7 @@ from event.models import Event
 from datetime import timedelta
 from django.utils import timezone
 import secrets
-import qrcode
-from io import BytesIO
-from django.core.mail import EmailMessage
+from .mail import send_booking_email
 from django.conf import settings
 
 class EventSlugField(serializers.SlugRelatedField):
@@ -25,6 +23,7 @@ class EventSerializer(serializers.ModelSerializer):
 class BookingSerializer(serializers.ModelSerializer):
     event = EventSlugField(queryset=Event.objects.all(), slug_field='slug')
     user = serializers.PrimaryKeyRelatedField(read_only=True)
+    total = serializers.DecimalField(read_only=True, max_digits=10, decimal_places=2)
 
     class Meta:
         model = Booking
@@ -60,21 +59,7 @@ class BookingSerializer(serializers.ModelSerializer):
             status=0
         )
 
-        qr = qrcode.make(token)
-
-        buffer = BytesIO()
-        qr.save(buffer)
-        buffer.seek(0)
-
-        user_email = user.email
-        email = EmailMessage(
-            'Your Booking Confirmation',
-            'Here is your booking QR Code. Please bring this to the event.',
-            settings.DEFAULT_FROM_EMAIL,
-            [user_email]
-        )
-        email.attach('booking_qr.png', buffer.getvalue(), 'image/png')
-        email.send()
+        send_booking_email(user, token)
 
         return booking
 

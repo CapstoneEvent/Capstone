@@ -153,7 +153,6 @@ def forgot_password(request):
         email = data.get('email')
 
         if email:
-            # Rest of your code remains unchanged
             try:
                 user = User.objects.get(email=email)
                 chars = string.ascii_uppercase + string.digits
