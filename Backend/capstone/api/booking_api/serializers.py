@@ -6,7 +6,6 @@ from datetime import timedelta
 from django.utils import timezone
 import secrets
 from .mail import send_booking_email
-from django.conf import settings
 
 class EventSlugField(serializers.SlugRelatedField):
     def to_internal_value(self, data):

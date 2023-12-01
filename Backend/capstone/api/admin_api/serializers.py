@@ -1,11 +1,15 @@
 from rest_framework import serializers
 from event.models import Event
-from sponsor.models import Sponsor
+from booking_verification.models import Booking_Verification
+from api.booking_api.mail import send_booking_email
 from booking.models import Booking
 from django.utils.text import slugify
 from event.models import Event
 from registration.models import Profile
 from django.contrib.auth.models import User
+import secrets
+from django.utils import timezone
+from datetime import timedelta
 
 class UserSerializer(serializers.ModelSerializer):
     profile = serializers.SerializerMethodField()
@@ -157,7 +161,25 @@ class BookingSerializer(serializers.ModelSerializer):
         validated_data['total'] = total
         validated_data['user'] = user
 
-        return Booking.objects.create(**validated_data)
+        booking = Booking.objects.create(**validated_data)
+
+        token = secrets.token_urlsafe(10)
+
+        if booking.event.end_date:
+            valid_till = booking.event.end_date
+        else:
+            valid_till = timezone.now() + timedelta(days=365)
+
+        Booking_Verification.objects.create(
+            booking=booking,
+            token=token,
+            valid_till=valid_till,
+            status=0
+        )
+
+        send_booking_email(user, token)
+
+        return booking
 
     def update(self, instance, validated_data):
         instance.quantity = validated_data.get('quantity', instance.quantity)
