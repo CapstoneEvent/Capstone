@@ -27,6 +27,8 @@ class UserSerializer(serializers.ModelSerializer):
         }
 
 class ProfileSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
+
     class Meta:
         model = Profile
         fields = ['user', 'phone', 'status', 'verified_at']
@@ -50,6 +52,8 @@ class UserWithProfileSerializer(serializers.ModelSerializer):
 
         instance.username = validated_data.get('username', instance.username)
         instance.email = validated_data.get('email', instance.email)
+        instance.first_name = validated_data.get('first_name', instance.first_name)
+        instance.last_name = validated_data.get('last_name', instance.last_name)
         instance.save()
 
         profile.phone = profile_data.get('phone', profile.phone)
@@ -58,6 +62,7 @@ class UserWithProfileSerializer(serializers.ModelSerializer):
         profile.save()
 
         return instance
+
 
 class EventSerializer(serializers.ModelSerializer):
     user_email = serializers.EmailField(write_only=True)
