@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from event.models import Event
 from booking_verification.models import Booking_Verification
+from django.contrib.auth.hashers import make_password
 from api.booking_api.mail import send_booking_email
 from booking.models import Booking
 from django.utils.text import slugify
@@ -16,8 +17,10 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'profile']
-
+        fields = ['id', 'username', 'email', 'password', 'first_name', 'last_name', 'profile']
+        extra_kwargs = {
+            'password': {'write_only': True} 
+        }
     def get_profile(self, obj):
         profile = Profile.objects.get(user=obj)
         return {
@@ -42,7 +45,11 @@ class UserWithProfileSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         profile_data = validated_data.pop('profile')
-        user = User.objects.create(**validated_data)
+        password = validated_data.pop('password')
+        user = User(**validated_data)
+        user.set_password(password)
+        user.save()
+
         Profile.objects.create(user=user, **profile_data)
         return user
 
