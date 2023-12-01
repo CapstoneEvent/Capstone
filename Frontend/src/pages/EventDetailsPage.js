@@ -1,36 +1,60 @@
-// EventDetailsPage.js
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useAuthContext } from "../hooks/useAuthContext";
+
 
 const EventDetailsPage = () => {
   const { slug } = useParams();
   const [event, setEvent] = useState(null);
-  const [quantity, setQuantity] = useState(1); // Initial quantity state
+  const [quantity, setQuantity] = useState(1);
+  const [userBookings, setUserBookings] = useState([]);
+  const { user } = useAuthContext();
+
+
+  // Fetch event details based on the slug
+  const fetchEventDetails = async () => {
+    try {
+      const response = await fetch(`/event/events/${slug}`);
+      if (response.ok) {
+        const eventData = await response.json();
+        setEvent(eventData.data);
+      } else {
+        console.error("Error fetching event details:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Network error:", error);
+    }
+  };
+
+  // Fetch user bookings
+  const fetchUserBookings = async () => {
+    try {
+      const response = await fetch("/booking/bookings");
+      if (response.ok) {
+        const userBookingsData = await response.json();
+        if (Array.isArray(userBookingsData.data)) {
+          setUserBookings(userBookingsData.data);
+        } else {
+          console.error("Invalid user bookings data:", userBookingsData);
+        }
+      } else {
+        console.error("Error fetching user bookings:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Network error:", error);
+    }
+  };
 
   useEffect(() => {
-    // Fetch event details based on the slug
-    const fetchEventDetails = async () => {
-      try {
-        const response = await fetch(`/event/events/${slug}`);
-        if (response.ok) {
-          const eventData = await response.json();
-          setEvent(eventData.data);
-        } else {
-          console.error("Error fetching event details:", response.statusText);
-        }
-      } catch (error) {
-        console.error("Network error:", error);
-      }
-    };
-
     fetchEventDetails();
+    fetchUserBookings();
   }, [slug]);
 
   const handleBuyTickets = async () => {
     try {
-      const response = await fetch(`/booking/bookings/`, {
+      const response = await fetch("/booking/bookings/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -40,8 +64,11 @@ const EventDetailsPage = () => {
 
       if (response.ok) {
         toast.success("Tickets purchased successfully!");
+        // After purchasing, update user bookings and refetch event details
+        fetchUserBookings();
+        fetchEventDetails();
       } else {
-        toast.success(response.statusText);
+        toast.error("Error purchasing tickets: " + response.statusText);
         console.error("Error purchasing tickets:", response.statusText);
       }
     } catch (error) {
@@ -52,6 +79,11 @@ const EventDetailsPage = () => {
   if (!event) {
     return <p>Loading...</p>;
   }
+
+  // Filter user bookings for the current event and user
+  const eventUserBookings = userBookings?.filter(
+    (booking) => booking.event === slug && booking.user === user.id
+  );
 
   return (
     <div className="container mx-auto my-8">
@@ -77,9 +109,22 @@ const EventDetailsPage = () => {
               min="1"
             />
           </div>
-          <div className="m-4">
-            <p className="text-gray-700 text-sm font-bold mb-2">Total Cost:</p>
-            <p className="text-blue-500 text-lg font-bold">CAD {quantity * event.price}</p>
+          {/* Display the number of seats available */}
+          <div class="badge">
+            <svg
+              class="inline-block w-5"
+              fill="none"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span>
+              {eventUserBookings.length > 0 ? `${eventUserBookings[0].quantity} booking already for this event.` : ""}
+            </span>
           </div>
           <button onClick={handleBuyTickets} className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700 m-2">
             Buy Tickets
