@@ -4,14 +4,12 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useAuthContext } from "../hooks/useAuthContext";
 
-
 const EventDetailsPage = () => {
   const { slug } = useParams();
   const [event, setEvent] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [userBookings, setUserBookings] = useState([]);
   const { user } = useAuthContext();
-
 
   // Fetch event details based on the slug
   const fetchEventDetails = async () => {
@@ -45,6 +43,9 @@ const EventDetailsPage = () => {
     } catch (error) {
       console.error("Network error:", error);
     }
+  };
+  const qty = (data) => {
+    return data.reduce((total, booking) => total + booking.quantity, 0);
   };
 
   useEffect(() => {
@@ -81,9 +82,7 @@ const EventDetailsPage = () => {
   }
 
   // Filter user bookings for the current event and user
-  const eventUserBookings = userBookings?.filter(
-    (booking) => booking.event === slug && booking.user === user.id
-  );
+  const eventUserBookings = userBookings?.filter((booking) => booking.event === slug && booking.user === user.id);
 
   return (
     <div className="container mx-auto my-8">
@@ -109,7 +108,6 @@ const EventDetailsPage = () => {
               min="1"
             />
           </div>
-          {/* Display the number of seats available */}
           <div class="badge">
             <svg
               class="inline-block w-5"
@@ -123,8 +121,12 @@ const EventDetailsPage = () => {
               <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
             <span>
-              {eventUserBookings.length > 0 ? `${eventUserBookings[0].quantity} booking already for this event.` : ""}
+              {eventUserBookings.length > 0 ? `${qty(eventUserBookings)} booking already for this event.` : ""}
             </span>
+          </div>
+          <div className="m-4">
+            <p className="text-gray-700 text-sm font-bold mb-2">Total Cost:</p>
+            <p className="text-blue-500 text-lg font-bold">CAD {quantity * event.price}</p>
           </div>
           <button onClick={handleBuyTickets} className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700 m-2">
             Buy Tickets
