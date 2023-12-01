@@ -1,8 +1,10 @@
 // BookingPage.js
 import React, { useEffect, useState } from "react";
+import { useAuthContext } from "../hooks/useAuthContext";
 
 const BookingPage = () => {
   const [bookings, setBookings] = useState([]);
+  const { user } = useAuthContext();
 
   useEffect(() => {
     // Fetch bookings
@@ -11,8 +13,10 @@ const BookingPage = () => {
         const response = await fetch("/booking/bookings/");
         if (response.ok) {
           const bookingData = await response.json();
-          console.log(bookingData);
-          setBookings(bookingData.data);
+          console.log(bookingData.data);
+          const filteredEvents = bookingData.data.filter((event) => event.user === user.id);
+          console.log(filteredEvents);
+          setBookings(filteredEvents);
         } else {
           console.error("Error fetching bookings:", response.statusText);
         }
@@ -36,7 +40,6 @@ const BookingPage = () => {
               <p>Event: {booking.event}</p>
               <p>Quantity: {booking.quantity}</p>
               <p>Total: CAD {booking.total}</p>
-              {/* Add more details as needed */}
               <hr></hr>
             </li>
           ))}
