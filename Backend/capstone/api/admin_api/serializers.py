@@ -54,19 +54,21 @@ class UserWithProfileSerializer(serializers.ModelSerializer):
         return user
 
     def update(self, instance, validated_data):
-        profile_data = validated_data.pop('profile')
-        profile = instance.profile
+        profile_data = validated_data.pop('profile', None)
+        password = validated_data.pop('password', None)
 
         instance.username = validated_data.get('username', instance.username)
         instance.email = validated_data.get('email', instance.email)
-        instance.first_name = validated_data.get('first_name', instance.first_name)
-        instance.last_name = validated_data.get('last_name', instance.last_name)
+        if password:
+            instance.set_password(password)
         instance.save()
 
-        profile.phone = profile_data.get('phone', profile.phone)
-        profile.status = profile_data.get('status', profile.status)
-        profile.verified_at = profile_data.get('verified_at', profile.verified_at)
-        profile.save()
+        if profile_data is not None:
+            profile = instance.profile
+            profile.phone = profile_data.get('phone', profile.phone)
+            profile.status = profile_data.get('status', profile.status)
+            profile.verified_at = profile_data.get('verified_at', profile.verified_at)
+            profile.save()
 
         return instance
 
