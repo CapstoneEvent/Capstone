@@ -14,6 +14,7 @@ import KanbanBoard from "./components/KanbanBoard";
 import EventDetailsPage from "./pages/EventDetailsPage";
 import EventListPage from "./pages/EventListPage";
 import BookingPage from "./pages/BookingPage";
+import UsersCRUDPage from "./pages/UsersCRUDPage";
 
 function App() {
   const { user } = useAuthContext();
@@ -31,6 +32,10 @@ function App() {
             <Route
               path="/events"
               element={user && user?.status === 2 ? <EventListPage /> : user ? <EventList /> : null}
+            />
+            <Route
+              path="/usercrud"
+              element={user && user?.status === 0 ? <UsersCRUDPage /> : user ? <EventListPage /> : null}
             />
             <Route path="/events/:slug" element={user ? <EventDetailsPage /> : ""} />
             <Route path="/login" element={!user ? <Login /> : <Navigate to="/" />} />

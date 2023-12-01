@@ -23,6 +23,8 @@ const Navbar = () => {
               <Link to="/kanban">Kanban</Link>
               <Link to="/events">Events</Link>
               <Link to="/bookings">Bookings</Link>
+              {/* Conditionally render the link based on user.status */}
+              {user.status === 0 && <Link to="/usercrud">User</Link>}
             </div>
           )}
           {user && (
