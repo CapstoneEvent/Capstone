@@ -77,6 +77,10 @@ const EventDetailsPage = () => {
               min="1"
             />
           </div>
+          <div className="m-4">
+            <p className="text-gray-700 text-sm font-bold mb-2">Total Cost:</p>
+            <p className="text-blue-500 text-lg font-bold">CAD {quantity * event.price}</p>
+          </div>
           <button onClick={handleBuyTickets} className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700 m-2">
             Buy Tickets
           </button>

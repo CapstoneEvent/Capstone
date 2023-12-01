@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "tailwindcss/tailwind.css";
 
 const UsersCRUDPage = () => {
@@ -9,6 +11,8 @@ const UsersCRUDPage = () => {
     email: "",
     username: "",
     password: "",
+    first_name: "",
+    last_name: "",
     profile: {
       phone: "",
       status: "0", // Default role is 'Admin'
@@ -49,6 +53,7 @@ const UsersCRUDPage = () => {
 
       setShowModal(false);
       await fetchUsers();
+      toast.success("User created successfully!");
     } catch (error) {
       console.error("Error creating user:", error);
       setError("Error creating user. Please try again.");
@@ -61,7 +66,7 @@ const UsersCRUDPage = () => {
     try {
       setLoading(true);
 
-      await fetch(`/admin/users/${selectedUser.id}/`, {
+      await fetch(`/admin/users/${selectedUser.profile.user}/`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -71,6 +76,7 @@ const UsersCRUDPage = () => {
 
       setShowModal(false);
       await fetchUsers();
+      toast.success("User updated successfully!");
     } catch (error) {
       console.error("Error editing user:", error);
       setError("Error editing user. Please try again.");
@@ -84,6 +90,7 @@ const UsersCRUDPage = () => {
       setLoading(true);
       await fetch(`/admin/users/${userId}`, { method: "DELETE" });
       await fetchUsers();
+      toast.success("User deleted successfully!");
     } catch (error) {
       console.error("Error deleting user:", error);
       setError("Error deleting user. Please try again.");
@@ -99,6 +106,8 @@ const UsersCRUDPage = () => {
       email: "",
       username: "",
       password: "",
+      first_name: "",
+      last_name: "",
       profile: {
         phone: "",
         status: "0",
@@ -122,6 +131,8 @@ const UsersCRUDPage = () => {
             <th className="py-2 px-4 border-b">Email</th>
             <th className="py-2 px-4 border-b">Role</th>
             <th className="py-2 px-4 border-b">Username</th>
+            <th className="py-2 px-4 border-b">First Name</th>
+            <th className="py-2 px-4 border-b">Last Name</th>
             <th className="py-2 px-4 border-b">Phone</th>
             <th className="py-2 px-4 border-b">Actions</th>
           </tr>
@@ -131,9 +142,11 @@ const UsersCRUDPage = () => {
             <tr key={user.id}>
               <td className="py-2 px-4 border-b">{user.email}</td>
               <td className="py-2 px-4 border-b">
-                {user.profile.status === "0" ? "Admin" : user.profile.status === "1" ? "Event Manager" : "Customer"}
+                {user.profile.status === 0 ? "Admin" : user.profile.status === 1 ? "Event Manager" : "Customer"}
               </td>
               <td className="py-2 px-4 border-b">{user.username}</td>
+              <td className="py-2 px-4 border-b">{user.first_name}</td>
+              <td className="py-2 px-4 border-b">{user.last_name}</td>
               <td className="py-2 px-4 border-b">{user.profile.phone}</td>
               <td className="py-2 px-4 border-b">
                 <button
@@ -144,6 +157,8 @@ const UsersCRUDPage = () => {
                       email: user.email,
                       username: user.username,
                       password: user.password,
+                      first_name: user.first_name,
+                      last_name: user.last_name,
                       profile: {
                         phone: user.profile.phone,
                         status: user.profile.status,
@@ -154,7 +169,10 @@ const UsersCRUDPage = () => {
                 >
                   Edit
                 </button>
-                <button className="bg-red-500 text-white py-1 px-2 rounded" onClick={() => handleDeleteUser(user.id)}>
+                <button
+                  className="bg-red-500 text-white py-1 px-2 rounded"
+                  onClick={() => handleDeleteUser(user.profile.user)}
+                >
                   Delete
                 </button>
               </td>
@@ -166,47 +184,70 @@ const UsersCRUDPage = () => {
       {showModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-8 rounded shadow-md">
-            <label className="block mb-2">Email:</label>
-            <input
-              type="text"
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className="mb-4 p-2 w-full border border-gray-300 rounded"
-            />
-            <label className="block mb-2">Role:</label>
-            <select
-              value={formData.profile.status}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  profile: { ...formData.profile, status: e.target.value },
-                })
-              }
-              className="mb-4 p-2 w-full border border-gray-300 rounded"
-            >
-              <option value="0">Admin</option>
-              <option value="1">Event Manager</option>
-              <option value="2">Customer</option>
-            </select>
-            <label className="block mb-2">Username:</label>
-            <input
-              type="text"
-              value={formData.username}
-              onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-              className="mb-4 p-2 w-full border border-gray-300 rounded"
-            />
-            <label className="block mb-2">Phone:</label>
-            <input
-              type="text"
-              value={formData.profile.phone}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  profile: { ...formData.profile, phone: e.target.value },
-                })
-              }
-              className="mb-4 p-2 w-full border border-gray-300 rounded"
-            />
+            <form>
+              <label className="block mb-2">Email:</label>
+              <input
+                type="text"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                className="mb-4 p-2 w-full border border-gray-300 rounded"
+              />
+              <label className="block mb-2">Password:</label>
+              <input
+                type="password"
+                value={formData.password}
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                className="mb-4 p-2 w-full border border-gray-300 rounded"
+              />
+              <label className="block mb-2">Role:</label>
+              <select
+                value={formData.profile.status}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    profile: { ...formData.profile, status: e.target.value },
+                  })
+                }
+                className="mb-4 p-2 w-full border border-gray-300 rounded"
+              >
+                <option value="0">Admin</option>
+                <option value="1">Event Manager</option>
+                <option value="2">Customer</option>
+              </select>
+              <label className="block mb-2">Username:</label>
+              <input
+                type="text"
+                value={formData.username}
+                onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                className="mb-4 p-2 w-full border border-gray-300 rounded"
+              />
+              <label className="block mb-2">First Name:</label>
+              <input
+                type="text"
+                value={formData.first_name}
+                onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
+                className="mb-4 p-2 w-full border border-gray-300 rounded"
+              />
+              <label className="block mb-2">Last Name:</label>
+              <input
+                type="text"
+                value={formData.last_name}
+                onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
+                className="mb-4 p-2 w-full border border-gray-300 rounded"
+              />
+              <label className="block mb-2">Phone:</label>
+              <input
+                type="text"
+                value={formData.profile.phone}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    profile: { ...formData.profile, phone: e.target.value },
+                  })
+                }
+                className="mb-4 p-2 w-full border border-gray-300 rounded"
+              />
+            </form>
             <div className="flex justify-between">
               <button
                 className="bg-blue-500 text-white py-2 px-4 rounded"
@@ -221,6 +262,8 @@ const UsersCRUDPage = () => {
           </div>
         </div>
       )}
+
+      <ToastContainer />
     </div>
   );
 };

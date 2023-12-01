@@ -20,7 +20,7 @@ const Navbar = () => {
         <nav>
           {user && (
             <div>
-              <Link to="/kanban">Kanban</Link>
+              {/* <Link to="/kanban">Kanban</Link> */}
               <Link to="/events">Events</Link>
               <Link to="/bookings">Bookings</Link>
               {/* Conditionally render the link based on user.status */}
