@@ -21,15 +21,16 @@ const Navbar = () => {
           {user && (
             <div>
               {/* <Link to="/kanban">Kanban</Link> */}
+              {user.status === 0 && <Link to="/usercrud">Users</Link>}
               <Link to="/events">Events</Link>
               <Link to="/bookings">Bookings</Link>
               {/* Conditionally render the link based on user.status */}
-              {user.status === 0 && <Link to="/usercrud">User</Link>}
+              {(user.status === 0 || user.status === 1) && <Link to="/verifybooking">Ticket Verify</Link>}
             </div>
           )}
           {user && (
             <div>
-              <Link to="/my-account">{user.email}</Link>
+              <Link to="/my-account">Account</Link>
               <button onClick={handleClick}>Log out</button>
             </div>
           )}

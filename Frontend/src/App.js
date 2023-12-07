@@ -15,6 +15,7 @@ import EventDetailsPage from "./pages/EventDetailsPage";
 import EventListPage from "./pages/EventListPage";
 import BookingPage from "./pages/BookingPage";
 import UsersCRUDPage from "./pages/UsersCRUDPage";
+import VerifyBooking from "./pages/VerifyBooking";
 
 function App() {
   const { user } = useAuthContext();
@@ -33,10 +34,8 @@ function App() {
               path="/events"
               element={user && user?.status === 2 ? <EventListPage /> : user ? <EventList /> : null}
             />
-            <Route
-              path="/usercrud"
-              element={user && user?.status === 0 ? <UsersCRUDPage /> : user ? <EventListPage /> : null}
-            />
+            <Route path="/usercrud" element={user && user?.status === 0 ? <UsersCRUDPage /> : user ? <Home /> : null} />
+            <Route path="/verifybooking" element={user && (user?.status === 0 || user?.status === 1) ? <VerifyBooking /> : user ? <Home /> : null} />
             <Route path="/events/:slug" element={user ? <EventDetailsPage /> : ""} />
             <Route path="/login" element={!user ? <Login /> : <Navigate to="/" />} />
             <Route path="/signup" element={!user ? <Signup /> : <Navigate to="/" />} />
