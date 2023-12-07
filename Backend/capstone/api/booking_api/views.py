@@ -32,17 +32,19 @@ def booking_list_create(request):
         booking_data = []
         for booking in bookings:
             serialized_booking = BookingSerializer(booking).data
+
             try:
                 booking_verification = Booking_Verification.objects.get(booking=booking)
-                qr_code_data = generate_qr_code_data(booking_verification.token)
-                serialized_booking['qr_code_data'] = qr_code_data
+                # qr_code_data = generate_qr_code_data(booking_verification.token)
+                # serialized_booking['qr_code_data'] = qr_code_data
+                serialized_booking['verification_token'] = booking_verification.token
             except Booking_Verification.DoesNotExist:
-                serialized_booking['qr_code_data'] = None
+                # serialized_booking['qr_code_data'] = None
+                serialized_booking['verification_token'] = None
 
             booking_data.append(serialized_booking)
 
         return Response({"status": True, "message": "Booking list retrieved.", "data": booking_data})
-
 
     elif request.method == 'POST':
         serializer = BookingSerializer(data=request.data, context={'request': request})
@@ -50,6 +52,7 @@ def booking_list_create(request):
             serializer.save()
             return Response({"status": True, "message": "Booking created.", "data": serializer.data}, status=201)
         return Response({"status": False, "message": "Booking creation failed.", "data": serializer.errors}, status=400)
+
 
 @api_view(['GET', 'PUT', 'DELETE'])
 @valid_token
@@ -76,18 +79,22 @@ def booking_detail(request, id):
     elif request.method == 'DELETE':
         booking.delete()
         return Response({"status": True, "message": "Booking deleted.", "data": None}, status=204)
-    
+
 @api_view(['GET'])
 @valid_token
 def update_booking_verification(request, token):
     try:
         booking_verification = Booking_Verification.objects.get(token=token)
-    except:
+    except Booking_Verification.DoesNotExist:
         return Response({"status": False, "message": "Invalid token."}, status=404)
+
+    if booking_verification.status == 1:
+        return Response({"status": False, "message": "This ticket has already been verified."}, status=400)
 
     if booking_verification.booking.event.user != request.user:
         return Response({"status": False, "message": "Unauthorized access."}, status=403)
 
+    booking_verification.status = 1
     booking_verification.save()
 
     booking = booking_verification.booking
@@ -104,10 +111,3 @@ def update_booking_verification(request, token):
             "Total Cost": total_cost
         }
     })
-
-def generate_qr_code_data(token):
-    qr = qrcode.make(token)
-    buffer = BytesIO()
-    qr.save(buffer)
-    buffer.seek(0)
-    return buffer.getvalue()
