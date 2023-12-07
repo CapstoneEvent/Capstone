@@ -2,8 +2,11 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from booking.models import Booking
 from event.models import Event
+from booking_verification.models import Booking_Verification
 from .serializers import BookingSerializer
 from api.user_api.decorators import require_authenticated_and_valid_token as valid_token
+import qrcode
+from io import BytesIO
 
 @api_view(["GET"])
 def test(request):
@@ -15,18 +18,31 @@ def test(request):
 def booking_list_create(request):
     if request.method == 'GET':
         user_profile_status = request.user.profile.status
+
         if user_profile_status == 0:
             bookings = Booking.objects.all()
         elif user_profile_status == 1:
             events = Event.objects.filter(user=request.user)
             bookings = Booking.objects.filter(event__in=events)
-
         elif user_profile_status == 2:
             bookings = Booking.objects.filter(user=request.user)
         else:
             bookings = Booking.objects.none()
-        serializer = BookingSerializer(bookings, many=True)
-        return Response({"status": True, "message": "Booking list retrieved.", "data": serializer.data})
+
+        booking_data = []
+        for booking in bookings:
+            serialized_booking = BookingSerializer(booking).data
+            try:
+                booking_verification = Booking_Verification.objects.get(booking=booking)
+                qr_code_data = generate_qr_code_data(booking_verification.token)
+                serialized_booking['qr_code_data'] = qr_code_data
+            except Booking_Verification.DoesNotExist:
+                serialized_booking['qr_code_data'] = None
+
+            booking_data.append(serialized_booking)
+
+        return Response({"status": True, "message": "Booking list retrieved.", "data": booking_data})
+
 
     elif request.method == 'POST':
         serializer = BookingSerializer(data=request.data, context={'request': request})
@@ -60,3 +76,38 @@ def booking_detail(request, id):
     elif request.method == 'DELETE':
         booking.delete()
         return Response({"status": True, "message": "Booking deleted.", "data": None}, status=204)
+    
+@api_view(['GET'])
+@valid_token
+def update_booking_verification(request, token):
+    try:
+        booking_verification = Booking_Verification.objects.get(token=token)
+    except:
+        return Response({"status": False, "message": "Invalid token."}, status=404)
+
+    if booking_verification.booking.event.user != request.user:
+        return Response({"status": False, "message": "Unauthorized access."}, status=403)
+
+    booking_verification.save()
+
+    booking = booking_verification.booking
+    event_title = booking.event.name
+    quantity = booking.quantity
+    total_cost = booking.total
+
+    return Response({
+        "status": True,
+        "message": "Booking verification status updated.",
+        "data": {
+            "Event Title": event_title,
+            "Booking Quantity": quantity,
+            "Total Cost": total_cost
+        }
+    })
+
+def generate_qr_code_data(token):
+    qr = qrcode.make(token)
+    buffer = BytesIO()
+    qr.save(buffer)
+    buffer.seek(0)
+    return buffer.getvalue()

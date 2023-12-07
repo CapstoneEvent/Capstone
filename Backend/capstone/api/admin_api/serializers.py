@@ -41,8 +41,13 @@ class UserWithProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['username', 'email', 'password', 'first_name', 'last_name', 'profile']
-        extra_kwargs = {'password': {'write_only': True}}
+        extra_kwargs = {'password': {'write_only': True, 'required': False}}
 
+    def __init__(self, *args, **kwargs):
+        super(UserWithProfileSerializer, self).__init__(*args, **kwargs)
+        if self.instance is not None:
+            self.fields['password'].required = False
+            
     def create(self, validated_data):
         profile_data = validated_data.pop('profile')
         user = User(**{k: v for k, v in validated_data.items() if k != 'password'})
@@ -58,23 +63,22 @@ class UserWithProfileSerializer(serializers.ModelSerializer):
         profile.save()
 
         return user
-
     def update(self, instance, validated_data):
         profile_data = validated_data.pop('profile', None)
-        password = validated_data.pop('password', None)
 
-        instance.username = validated_data.get('username', instance.username)
-        instance.email = validated_data.get('email', instance.email)
-        if password:
+        password = validated_data.pop('password', None)
+        if password is not None:
             instance.set_password(password)
+
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
 
         instance.save()
 
         if profile_data is not None:
             profile = instance.profile
-            profile.phone = profile_data.get('phone', profile.phone)
-            profile.status = profile_data.get('status', profile.status)
-            profile.verified_at = profile_data.get('verified_at', profile.verified_at)
+            for attr, value in profile_data.items():
+                setattr(profile, attr, value)
             profile.save()
 
         return instance

@@ -1,14 +1,57 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+from django.db.models import Sum, Count
 from event.models import Event, Event_User
 from .serializers import EventSerializer
 from django.contrib.auth.models import User
+from registration.models import Profile
+from booking.models import Booking
 from api.user_api.decorators import require_authenticated_and_valid_token as valid_token
 
 @api_view(["GET"])
 def test(request):
     data = {"status": True, "message": "Testing Event API", "data": None}
     return Response(data)
+
+@api_view(['GET', 'POST'])
+@valid_token
+def dasboard_details(request):
+    user_profile_status = request.user.profile.status
+
+    if user_profile_status == 0:
+        total_profiles = Profile.objects.count()
+        total_events = Event.objects.count()
+        total_earnings = Booking.objects.aggregate(Sum('total'))['total__sum'] or 0
+
+        events = Event.objects.annotate(
+            total_bookings=Sum('booking__quantity'),
+            earnings=Sum('booking__total')
+        ).values('name', 'total_bookings', 'earnings')
+
+        return Response({
+            'total_profiles': total_profiles,
+            'events': list(events),
+            'total_events': total_events,
+            'total_earnings': total_earnings
+        })
+
+    elif user_profile_status == 1:
+        events = Event.objects.filter(user=request.user).annotate(
+            total_bookings=Sum('booking__quantity'),
+            earnings=Sum('booking__total')
+        ).values('name', 'total_bookings', 'earnings')
+
+        total_events = events.count()
+        total_earnings = events.aggregate(Sum('earnings'))['earnings__sum'] or 0
+
+        return Response({
+            'events': list(events),
+            'total_events': total_events,
+            'total_earnings': total_earnings
+        })
+
+    else:
+        return Response({'message': 'No data available for this user status.'})
 
 @api_view(['GET', 'POST'])
 @valid_token
