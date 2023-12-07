@@ -105,6 +105,15 @@ nav button {
   cursor: pointer;
   font-size: 1em;
 }
+.qrb button {
+  background: var(--primary) !important;
+  border: 0 !important;
+  color: #fff !important;
+  padding: 10px !important;
+  font-family: "Poppins" !important;
+  border-radius: 4px !important;
+  cursor: pointer !important;
+}
 
 /* Center the first child (left side) */
 nav > div:first-child {
