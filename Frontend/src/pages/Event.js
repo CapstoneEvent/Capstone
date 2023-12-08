@@ -28,7 +28,7 @@ const EventComponent = () => {
 
   const fetchData = async () => {
     try {
-      const response = await fetch("/event/dashboard");
+      const response = await fetch("/event/events");
       if (response.ok) {
         const eventData = await response.json();
         setEvents(eventData.data);
