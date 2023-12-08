@@ -16,6 +16,7 @@ import EventListPage from "./pages/EventListPage";
 import BookingPage from "./pages/BookingPage";
 import UsersCRUDPage from "./pages/UsersCRUDPage";
 import VerifyBooking from "./pages/VerifyBooking";
+import EventDashboard from "./pages/Dash";
 
 function App() {
   const { user } = useAuthContext();
@@ -26,16 +27,31 @@ function App() {
         <Navbar />
         <div className="pages">
           <Routes>
-            <Route path="/" element={user ? <Home /> : <Navigate to="/login" />} />
+            <Route
+              path="/"
+              element={
+                user && (user?.status === 0 || user?.status === 1) ? (
+                  <EventDashboard />
+                ) : user ? (
+                  <Home />
+                ) : (
+                  <Navigate to="/login" />
+                )
+              }
+            />
+            {/* <Route path="/" element={user ? <Home /> : <Navigate to="/login" />} /> */}
             <Route path="/my-account" element={user ? <AccountPage /> : ""} />
-            <Route path="/kanban" element={user ? <KanbanBoard /> : ""} />
+            <Route path="/kanban/:slug" element={user ? <KanbanBoard /> : ""} />
             <Route path="/bookings" element={user ? <BookingPage /> : ""} />
             <Route
               path="/events"
               element={user && user?.status === 2 ? <EventListPage /> : user ? <EventList /> : null}
             />
             <Route path="/usercrud" element={user && user?.status === 0 ? <UsersCRUDPage /> : user ? <Home /> : null} />
-            <Route path="/verifybooking" element={user && (user?.status === 0 || user?.status === 1) ? <VerifyBooking /> : user ? <Home /> : null} />
+            <Route
+              path="/verifybooking"
+              element={user && (user?.status === 0 || user?.status === 1) ? <VerifyBooking /> : user ? <Home /> : null}
+            />
             <Route path="/events/:slug" element={user ? <EventDetailsPage /> : ""} />
             <Route path="/login" element={!user ? <Login /> : <Navigate to="/" />} />
             <Route path="/signup" element={!user ? <Signup /> : <Navigate to="/" />} />

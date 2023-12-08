@@ -1,5 +1,8 @@
 // EventComponent.js
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom"; // Import Link from react-router-dom
+import { faEdit, faTrash, faEye } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const EventComponent = () => {
   const [events, setEvents] = useState([]);
@@ -25,10 +28,11 @@ const EventComponent = () => {
 
   const fetchData = async () => {
     try {
-      const response = await fetch("/event/events");
+      const response = await fetch("/event/dashboard");
       if (response.ok) {
         const eventData = await response.json();
         setEvents(eventData.data);
+        console.log(eventData.data);
       } else {
         console.error("Error fetching events:", response.statusText);
       }
@@ -118,15 +122,15 @@ const EventComponent = () => {
       console.error("Network error:", error);
     }
   };
-function formatISODate(isoDateString) {
-  const parsedDate = new Date(isoDateString);
+  function formatISODate(isoDateString) {
+    const parsedDate = new Date(isoDateString);
 
-  const day = String(parsedDate.getDate()).padStart(2, "0");
-  const month = String(parsedDate.getMonth() + 1).padStart(2, "0"); // Months are zero-based
-  const year = parsedDate.getFullYear();
+    const day = String(parsedDate.getDate()).padStart(2, "0");
+    const month = String(parsedDate.getMonth() + 1).padStart(2, "0"); // Months are zero-based
+    const year = parsedDate.getFullYear();
 
-  return `${year}-${month}-${day}`;
-}
+    return `${year}-${month}-${day}`;
+  }
 
   return (
     <div className="container mx-auto my-8">
@@ -160,11 +164,18 @@ function formatISODate(isoDateString) {
                   className="bg-blue-500 text-white px-2 py-1 mr-2 rounded"
                   onClick={() => handleEdit(event.slug)}
                 >
-                  Edit
+                  <FontAwesomeIcon icon={faEdit} />
                 </button>
-                <button className="bg-red-500 text-white px-2 py-1 rounded" onClick={() => handleDelete(event.slug)}>
-                  Delete
+
+                <button
+                  className="bg-red-500 text-white px-2 py-1 mr-2 rounded"
+                  onClick={() => handleDelete(event.slug)}
+                >
+                  <FontAwesomeIcon icon={faTrash} />
                 </button>
+                <Link to={`/kanban/${event.slug}`} className="bg-green-500 text-white px-2 py-1 rounded">
+                  <FontAwesomeIcon icon={faEye} />
+                </Link>
               </td>
             </tr>
           ))}

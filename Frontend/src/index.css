@@ -22,10 +22,10 @@ header .container {
   align-items: center;
   justify-content: space-between;
 }
-header a {
+/* header a {
   color: #333;
   text-decoration: none;
-}
+} */
 .pages {
   max-width: 1400px;
   padding: 20px;

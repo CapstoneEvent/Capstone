@@ -12,12 +12,12 @@ const VerifyBooking = () => {
 
   const handleVerifyToken = async () => {
     try {
-      const response = await fetch("http://localhost:8000/booking/booking_verification/", {
+      const response = await fetch("/booking/booking_verification/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        credentials: "include", 
+        credentials: "include",
         body: JSON.stringify({ token: token }),
       });
 
@@ -83,9 +83,9 @@ const VerifyBooking = () => {
             )}
           </DialogContent>
           <DialogActions className="justify-center mt-1 qrb">
-            <Button onClick={handleCloseModal} variant="contained" color="secondary">
+            <button onClick={handleCloseModal} variant="contained" color="secondary">
               Close
-            </Button>
+            </button>
           </DialogActions>
         </Dialog>
       </div>

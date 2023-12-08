@@ -1,5 +1,6 @@
 import PlusIcon from "../icons/PlusIcon";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import { Column, Id, Task } from "../types";
 import ColumnContainer from "./ColumnContainer";
 import {
@@ -33,44 +34,20 @@ const defaultCols: Column[] = [
 ];
 
 const defaultTasks: Task[] = [
-  {
-    id: "1",
-    columnId: "todo",
-    content: "List admin APIs for Events",
-  },
-  {
-    id: "2",
-    columnId: "todo",
-    content:
-      "Develop user registration functionality with OTP delivered on SMS after email confirmation and phone number confirmation",
-  },
-  {
-    id: "3",
-    columnId: "doing",
-    content: "Conduct security testing",
-  },
-  {
-    id: "4",
-    columnId: "doing",
-    content: "Analyze competitors",
-  },
-  {
-    id: "5",
-    columnId: "done",
-    content: "Create UI kit documentation",
-  },
-  {
-    id: "6",
-    columnId: "done",
-    content: "Dev meeting",
-  },
+  
 ];
 
 function KanbanBoard() {
+  const { slug } = useParams();
   const [columns, setColumns] = useState<Column[]>(defaultCols);
   const columnsId = useMemo(() => columns.map((col) => col.id), [columns]);
 
-  const [tasks, setTasks] = useState<Task[]>(defaultTasks);
+const [tasks, setTasks] = useState<Task[]>(() => {
+    // Fetch tasks from local storage on component mount
+    const kanbanId = slug;
+    const storedTasks = localStorage.getItem(`kanban_${kanbanId}_tasks`);
+    return storedTasks ? JSON.parse(storedTasks) : defaultTasks;
+  });
 
   const [activeColumn, setActiveColumn] = useState<Column | null>(null);
 
@@ -83,6 +60,11 @@ function KanbanBoard() {
       },
     })
   );
+  useEffect(() => {
+    // Save tasks to local storage whenever tasks change
+    const kanbanId = slug;
+    localStorage.setItem(`kanban_${kanbanId}_tasks`, JSON.stringify(tasks));
+  }, [tasks, slug]);
 
   return (
     <div
@@ -121,7 +103,7 @@ function KanbanBoard() {
               ))}
             </SortableContext>
           </div>
-          <button
+          {/* <button
             onClick={() => {
               createNewColumn();
             }}
@@ -143,7 +125,7 @@ function KanbanBoard() {
           >
             <PlusIcon />
             Add Column
-          </button>
+          </button> */}
         </div>
 
         {createPortal(

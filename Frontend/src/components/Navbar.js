@@ -12,33 +12,51 @@ const Navbar = () => {
   };
 
   return (
-    <header>
-      <div className="container">
-        <Link to="/">
-          <h1>Event Buddy</h1>
+    <header className="bg-gray-800 text-white py-4">
+      <div className="container mx-auto flex justify-between items-center">
+        <Link to="/" className="text-2xl font-bold">
+          Event Buddy
         </Link>
         <nav>
           {user && (
-            <div>
-              {/* <Link to="/kanban">Kanban</Link> */}
-              {user.status === 0 && <Link to="/usercrud">Users</Link>}
-              <Link to="/events">Events</Link>
-              <Link to="/bookings">Bookings</Link>
-              {/* Conditionally render the link based on user.status */}
-              {(user.status === 0 || user.status === 1) && <Link to="/verifybooking">Ticket Verify</Link>}
+            <div className="flex space-x-4">
+              <Link to="/events" className="hover:text-gray-300">
+                Events
+              </Link>
+              <Link to="/bookings" className="hover:text-gray-300">
+                Bookings
+              </Link>
+              {user.status === 0 && (
+                <Link to="/usercrud" className="hover:text-gray-300">
+                  Users
+                </Link>
+              )}
+              {(user.status === 0 || user.status === 1) && (
+                <Link to="/verifybooking" className="hover:text-gray-300">
+                  Ticket Verify
+                </Link>
+              )}
             </div>
           )}
           {user && (
-            <div>
-              <Link to="/my-account">Account</Link>
-              <button onClick={handleClick}>Log out</button>
+            <div className="flex items-center space-x-4">
+              <Link to="/my-account" className="hover:text-gray-300">
+                Account
+              </Link>
+              <button onClick={handleClick} className="hover:text-gray-300">
+                Log out
+              </button>
             </div>
           )}
 
           {!user && (
-            <div>
-              <Link to="/login">Login</Link>
-              <Link to="/signup">Signup</Link>
+            <div className="flex space-x-4">
+              <Link to="/login" className="hover:text-gray-300">
+                Login
+              </Link>
+              <Link to="/signup" className="hover:text-gray-300">
+                Signup
+              </Link>
             </div>
           )}
         </nav>
