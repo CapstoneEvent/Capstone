@@ -5,5 +5,5 @@ urlpatterns = [
     path("", views.test),
     path('bookings/', views.booking_list_create),
     path('bookings/<int:id>/', views.booking_detail),
-    path('booking_verification/<str:token>/', views.update_booking_verification),
+    path('booking_verification/', views.update_booking_verification),
 ]

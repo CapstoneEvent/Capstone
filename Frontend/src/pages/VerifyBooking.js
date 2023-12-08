@@ -12,7 +12,15 @@ const VerifyBooking = () => {
 
   const handleVerifyToken = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/booking/booking_verification/${token}/`);
+      const response = await fetch("http://localhost:8000/booking/booking_verification/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include", 
+        body: JSON.stringify({ token: token }),
+      });
+
       if (response.ok) {
         const data = await response.json();
         setBookingData(data);

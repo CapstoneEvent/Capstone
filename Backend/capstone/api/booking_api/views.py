@@ -80,34 +80,39 @@ def booking_detail(request, id):
         booking.delete()
         return Response({"status": True, "message": "Booking deleted.", "data": None}, status=204)
 
-@api_view(['GET'])
+@api_view(['POST'])
 @valid_token
-def update_booking_verification(request, token):
-    try:
-        booking_verification = Booking_Verification.objects.get(token=token)
-    except Booking_Verification.DoesNotExist:
-        return Response({"status": False, "message": "Invalid token."}, status=404)
+def update_booking_verification(request):
+    if request.user.profile.status == 1:
+        token = request.data.get('token', None)
+        try:
+            booking_verification = Booking_Verification.objects.get(token=token)
+        except Booking_Verification.DoesNotExist:
+            return Response({"status": False, "message": "Invalid token."}, status=404)
 
-    if booking_verification.status == 1:
-        return Response({"status": False, "message": "This ticket has already been verified."}, status=400)
+        if booking_verification.status == 1:
+            return Response({"status": False, "message": "This ticket has already been verified."}, status=400)
 
-    if booking_verification.booking.event.user != request.user:
+        if booking_verification.booking.event.user != request.user:
+            return Response({"status": False, "message": "Unauthorized access."}, status=403)
+
+        booking_verification.status = 1
+        booking_verification.save()
+
+        booking = booking_verification.booking
+        event_title = booking.event.name
+        quantity = booking.quantity
+        total_cost = booking.total
+
+        return Response({
+            "status": True,
+            "message": "Booking verification status updated.",
+            "data": {
+                "Event Title": event_title,
+                "Booking Quantity": quantity,
+                "Total Cost": total_cost
+            }
+        })
+    else:
         return Response({"status": False, "message": "Unauthorized access."}, status=403)
 
-    booking_verification.status = 1
-    booking_verification.save()
-
-    booking = booking_verification.booking
-    event_title = booking.event.name
-    quantity = booking.quantity
-    total_cost = booking.total
-
-    return Response({
-        "status": True,
-        "message": "Booking verification status updated.",
-        "data": {
-            "Event Title": event_title,
-            "Booking Quantity": quantity,
-            "Total Cost": total_cost
-        }
-    })
