@@ -9,20 +9,19 @@ const BookingPage = () => {
   const { user } = useAuthContext();
 
   useEffect(() => {
-    // Fetch bookings
     const fetchBookings = async () => {
       try {
         const response = await fetch("/booking/bookings/");
         if (response.ok) {
           const bookingData = await response.json();
           console.log(bookingData);
-          if (user.status === 0) {
+          // if (user.status === 0) {
             setBookings(bookingData.data);
-          } else {
-            const filteredEvents = bookingData.data.filter((event) => event.user === user.id);
-            console.log(filteredEvents);
-            setBookings(filteredEvents);
-          }
+          // } else {
+          //   const filteredEvents = bookingData.data.filter((event) => event.user === user.id);
+          //   console.log(filteredEvents);
+          //   setBookings(filteredEvents);
+          // }
         } else {
           console.error("Error fetching bookings:", response.statusText);
         }
@@ -52,7 +51,7 @@ const BookingPage = () => {
           {bookings.map((booking) => (
             <div
               key={booking.id}
-              onClick={() => handleCardClick(booking)} // Added onClick handler
+              onClick={() => handleCardClick(booking)} 
               className="bg-green-100 p-4 rounded-lg shadow-md cursor-pointer"
             >
               <p className="text-lg font-semibold mb-2">Event: {booking.event}</p>
@@ -63,13 +62,10 @@ const BookingPage = () => {
           ))}
         </div>
       )}
-
-      {/* Modal */}
       <Dialog open={Boolean(selectedBooking)} onClose={handleCloseModal} fullWidth maxWidth="sm">
         <DialogTitle className="bg-green-300 text-center mb-4 font-bold">QR Code and Details</DialogTitle>
         <DialogContent className="text-center">
           <div className="flex flex-col items-center space-y-4">
-            {/* Generate QR code using verification_token */}
             <QRCode value={selectedBooking?.verification_token} size={300} className="mt-4" />
             <Typography variant="hea" paragraph className="font-bold">
               {selectedBooking?.verification_token}

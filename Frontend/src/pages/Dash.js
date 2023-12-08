@@ -1,6 +1,7 @@
 // EventDashboard.js
 
 import React, { useState, useEffect } from "react";
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
 import { Card, CardContent, Typography } from "@mui/material";
 import { ReactComponent as ProfileIcon } from "../icons/profile.svg";
 import { ReactComponent as BookingsIcon } from "../icons/bookings.svg";
@@ -32,16 +33,18 @@ const EventDashboard = () => {
 
       {eventData && (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Card className="bg-blue-200 text-center font-bold">
-              <CardContent>
-                <ProfileIcon className="w-8 h-8 mb-2 mx-auto text-blue-800 !bg-blue-200" />
-                <Typography variant="h6" className="text-blue-800">
-                  Total Profiles
-                </Typography>
-                <Typography className="text-blue-800">{eventData.total_profiles}</Typography>
-              </CardContent>
-            </Card>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {eventData.total_profiles > 0 && (
+              <Card className="bg-blue-200 text-center font-bold">
+                <CardContent>
+                  <ProfileIcon className="w-8 h-8 mb-2 mx-auto text-blue-800 !bg-blue-200" />
+                  <Typography variant="h6" className="text-blue-800">
+                    Total Profiles
+                  </Typography>
+                  <Typography className="text-blue-800">{eventData.total_profiles}</Typography>
+                </CardContent>
+              </Card>
+            )}
 
             <Card className="bg-purple-200 text-center font-bold">
               <CardContent>
@@ -50,8 +53,16 @@ const EventDashboard = () => {
                   Total Events
                 </Typography>
                 <Typography className="text-purple-800">{eventData.total_events}</Typography>
-                <EarningsIcon className="w-8 h-8 mx-auto my-2 text-purple-800 !bg-purple-200" />
-                <Typography className="text-purple-800">Total Earnings: ${eventData.total_earnings}</Typography>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-green-200 text-center font-bold">
+              <CardContent>
+                <EarningsIcon className="w-8 h-8 mb-2 mx-auto text-green-800 !bg-green-200" />
+                <Typography variant="h6" className="text-green-800">
+                  Total Earnings
+                </Typography>
+                <Typography className="text-green-800">CAD ${eventData.total_earnings}</Typography>
               </CardContent>
             </Card>
           </div>
@@ -59,33 +70,28 @@ const EventDashboard = () => {
             Events
           </Typography>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {Array.isArray(eventData.events) && eventData.events.map((event, index) => (
-              <Card key={index} className={`bg-${index % 2 === 0 ? "green" : "yellow"}-200 text-center font-bold`}>
-                <CardContent>
-                  <Typography variant="h6" className={`text-${index % 2 === 0 ? "green" : "yellow"}-800`}>
-                    {event.name}
-                  </Typography>
-                  <BookingsIcon
-                    className={`w-8 h-8 mx-auto mb-2 text-${index % 2 === 0 ? "green" : "yellow"}-800 !bg-${
-                      index % 2 === 0 ? "green" : "yellow"
-                    }-200`}
-                  />
-                  <Typography className={`text-${index % 2 === 0 ? "green" : "yellow"}-800`}>
-                    Total Bookings: {event.total_bookings}
-                  </Typography>
-                  <EarningsIcon
-                    className={`w-8 h-8 mx-auto my-2 text-${index % 2 === 0 ? "green" : "yellow"}-800 !bg-${
-                      index % 2 === 0 ? "green" : "yellow"
-                    }-200`}
-                  />
-                  <Typography className={`text-${index % 2 === 0 ? "green" : "yellow"}-800`}>
-                    Earnings: ${event.earnings}
-                  </Typography>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          <TableContainer component={Paper} className="mt-4">
+            <Table aria-label="simple table">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Event Name</TableCell>
+                  <TableCell align="right">Total Bookings</TableCell>
+                  <TableCell align="right">Total Earnings ($)</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {Array.isArray(eventData.events) && eventData.events.map((event, index) => (
+                  <TableRow key={index}>
+                    <TableCell component="th" scope="row">
+                      {event.name}
+                    </TableCell>
+                    <TableCell align="right">{event.total_bookings}</TableCell>
+                    <TableCell align="right">{event.earnings}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </>
       )}
     </div>

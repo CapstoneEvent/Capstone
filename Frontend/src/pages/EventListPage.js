@@ -8,7 +8,7 @@ const EventCard = ({ event }) => {
     backgroundImage: `url(${event.cover_picture})`,
     backgroundSize: "cover",
     backgroundPosition: "center",
-    height: "200px", // Set the desired height for your card
+    height: "200px",
   };
 
   return (

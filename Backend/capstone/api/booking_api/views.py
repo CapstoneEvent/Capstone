@@ -1,7 +1,7 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from booking.models import Booking
-from event.models import Event
+from event.models import Event, Event_User
 from booking_verification.models import Booking_Verification
 from .serializers import BookingSerializer
 from api.user_api.decorators import require_authenticated_and_valid_token as valid_token
@@ -87,14 +87,15 @@ def update_booking_verification(request):
         token = request.data.get('token', None)
         try:
             booking_verification = Booking_Verification.objects.get(token=token)
+            event = booking_verification.booking.event
         except Booking_Verification.DoesNotExist:
             return Response({"status": False, "message": "Invalid token."}, status=404)
 
         if booking_verification.status == 1:
             return Response({"status": False, "message": "This ticket has already been verified."}, status=400)
-
-        if booking_verification.booking.event.user != request.user:
-            return Response({"status": False, "message": "Unauthorized access."}, status=403)
+        
+        if not Event_User.objects.filter(event=event, user=request.user).exists():
+            return Response({"status": False, "message": "Unauthorized access. This is not your Event!"}, status=403)
 
         booking_verification.status = 1
         booking_verification.save()
