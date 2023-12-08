@@ -1,14 +1,23 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useLogout } from "../hooks/useLogout";
 import { useAuthContext } from "../hooks/useAuthContext";
 
 const Navbar = () => {
+  const navigate = useNavigate(); 
+  const location = useLocation();
   const { logout } = useLogout();
   const { user } = useAuthContext();
 
+  useEffect(() => {
+    if (user && user.status === 2 && location.pathname === "/") {
+      navigate("/events");
+    }
+  }, [user, location, navigate]);
+  
   const handleClick = () => {
     logout();
+    navigate("/login");
   };
 
   return (

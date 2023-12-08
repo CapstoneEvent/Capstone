@@ -4,6 +4,7 @@ import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography }
 const VerifyBooking = () => {
   const [token, setToken] = useState("");
   const [bookingData, setBookingData] = useState(null);
+  const [errorMessage, setErrorMessage] = useState("");
   const [openModal, setOpenModal] = useState(false);
 
   const handleTokenInputChange = (e) => {
@@ -21,15 +22,20 @@ const VerifyBooking = () => {
         body: JSON.stringify({ token: token }),
       });
 
+      const data = await response.json();
       if (response.ok) {
-        const data = await response.json();
-        setBookingData(data);
-        setOpenModal(true);
+        setBookingData(data.data);
+        setErrorMessage("");
       } else {
-        console.error("Error verifying token:", response.statusText);
+        setBookingData(null);
+        setErrorMessage(data.message || "An error occurred.");
       }
+      setOpenModal(true);
     } catch (error) {
       console.error("Network error:", error);
+      setBookingData(null);
+      setErrorMessage("Network error.");
+      setOpenModal(true);
     }
   };
 
@@ -37,6 +43,7 @@ const VerifyBooking = () => {
     setOpenModal(false);
     setToken("");
     setBookingData(null);
+    setErrorMessage("");
   };
 
   return (
@@ -63,30 +70,34 @@ const VerifyBooking = () => {
         </div>
 
         {/* Modal */}
-        <Dialog open={openModal} onClose={handleCloseModal} fullWidth maxWidth="sm">
-          <DialogTitle className="bg-green-300 text-center mb-4 font-bold">Booking Details</DialogTitle>
-          <DialogContent className="text-center">
-            {bookingData ? (
-              <div className="flex flex-col items-center space-y-4">
-                <Typography variant="hea" paragraph className="font-bold">
-                  Event: {bookingData.event}
-                </Typography>
-                <Typography variant="hea" paragraph className="font-bold">
-                  Quantity: {bookingData.quantity}
-                </Typography>
-                <Typography variant="hea" paragraph className="font-bold">
-                  Total: CAD {bookingData.total}
-                </Typography>
-              </div>
-            ) : (
-              <p>No data available for the provided token.</p>
-            )}
-          </DialogContent>
-          <DialogActions className="justify-center mt-1 qrb">
-            <button onClick={handleCloseModal} variant="contained" color="secondary">
-              Close
-            </button>
-          </DialogActions>
+          <Dialog open={openModal} onClose={handleCloseModal} fullWidth maxWidth="sm">
+            <DialogTitle className={`bg-${bookingData ? 'green' : 'red'}-300 text-center mb-4 font-bold`}>
+              {bookingData ? "Booking Details" : "Error"}
+            </DialogTitle>
+            <DialogContent className="text-center">
+              {bookingData ? (
+                <div className="flex flex-col items-center space-y-4">
+                  {/* Success message and data display */}
+                  <Typography variant="h6" paragraph className="font-bold">
+                    Event: {bookingData["Event Title"]}
+                  </Typography>
+                  <Typography variant="h6" paragraph className="font-bold">
+                    Quantity: {bookingData["Booking Quantity"]}
+                  </Typography>
+                  <Typography variant="h6" paragraph className="font-bold">
+                    Total: CAD {bookingData["Total Cost"]}
+                  </Typography>
+                </div>
+              ) : (
+                // Display error message
+                <p>{errorMessage}</p>
+              )}
+            </DialogContent>
+            <DialogActions className="justify-center mt-1">
+              <button onClick={handleCloseModal} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                Close
+              </button>
+            </DialogActions>
         </Dialog>
       </div>
     </div>

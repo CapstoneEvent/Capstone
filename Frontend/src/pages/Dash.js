@@ -8,7 +8,7 @@ import { ReactComponent as EarningsIcon } from "../icons/earnings.svg";
 import { ReactComponent as EventsIcon } from "../icons/events.svg";
 
 const EventDashboard = () => {
-  const [eventData, setEventData] = useState(null);
+  const [eventData, setEventData] = useState({ events: [] });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -22,7 +22,7 @@ const EventDashboard = () => {
     };
 
     fetchData();
-  }, []);
+  }, [])
 
   return (
     <div className="p-8">
@@ -58,8 +58,9 @@ const EventDashboard = () => {
           <Typography variant="h4" className="mb-4 text-center !mt-6">
             Events
           </Typography>
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {eventData.events.map((event, index) => (
+            {Array.isArray(eventData.events) && eventData.events.map((event, index) => (
               <Card key={index} className={`bg-${index % 2 === 0 ? "green" : "yellow"}-200 text-center font-bold`}>
                 <CardContent>
                   <Typography variant="h6" className={`text-${index % 2 === 0 ? "green" : "yellow"}-800`}>
