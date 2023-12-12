@@ -94,8 +94,9 @@ def update_booking_verification(request):
         if booking_verification.status == 1:
             return Response({"status": False, "message": "This ticket has already been verified."}, status=400)
         
-        if not Event_User.objects.filter(event=event, user=request.user).exists():
-            return Response({"status": False, "message": "Unauthorized access. This is not your Event!"}, status=403)
+        if request.user.profile.status != 1:
+            if not Event_User.objects.filter(event=event, user=request.user).exists():
+                return Response({"status": False, "message": "Unauthorized access. This is not your Event!"}, status=403)
 
         booking_verification.status = 1
         booking_verification.save()

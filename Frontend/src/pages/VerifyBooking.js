@@ -76,7 +76,7 @@ const VerifyBooking = () => {
             </DialogTitle>
             <DialogContent className="text-center">
               {bookingData ? (
-                <div className="flex flex-col items-center space-y-4">
+                <div className="flex flex-col items-center space-y-4 success">
                   {/* Success message and data display */}
                   <Typography variant="h6" paragraph className="font-bold">
                     Event: {bookingData["Event Title"]}
@@ -90,7 +90,11 @@ const VerifyBooking = () => {
                 </div>
               ) : (
                 // Display error message
-                <p>{errorMessage}</p>
+                <>
+                <div className="error">
+                  <p>{errorMessage}</p>
+                </div>
+                </>
               )}
             </DialogContent>
             <DialogActions className="justify-center mt-1">

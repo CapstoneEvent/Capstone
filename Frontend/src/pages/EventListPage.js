@@ -15,9 +15,17 @@ const EventCard = ({ event }) => {
     <Link to={`/events/${event.slug}`}>
       <div class="card hover:shadow-lg">
         <img
-          src={`https://api.ellecanada.com/app/uploads/2023/07/canada-music-festivals.jpg`}
           alt="img"
+          // src={`http://localhost:8000/${event.cover_picture}`}
+          src={`https://api.ellecanada.com/app/uploads/2023/07/canada-music-festivals.jpg`}
           class="h-32 sm:h-48 w-full object-cover"
+        />
+        <img
+          alt="img"
+          src={`http://localhost:8000/${event.cover_picture}`}
+          onError={(e) => {
+            e.target.src = 'https://api.ellecanada.com/app/uploads/2023/07/canada-music-festivals.jpg';
+          }}
         />
         <div class="m-4">
           <span class="font-bold truncate block">{event.name}</span>
