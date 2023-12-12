@@ -14,17 +14,12 @@ const EventCard = ({ event }) => {
   return (
     <Link to={`/events/${event.slug}`}>
       <div class="card hover:shadow-lg">
-        {/* <img
-          alt="img"
-          // src={`http://localhost:8000/${event.cover_picture}`}
-          src={`https://api.ellecanada.com/app/uploads/2023/07/canada-music-festivals.jpg`}
-          class="h-32 sm:h-48 w-full object-cover"
-        /> */}
         <img
           alt="img"
           src={`http://localhost:8000/${event.cover_picture}`}
+          class="h-32 sm:h-48 w-full object-cover"
           onError={(e) => {
-            e.target.src = 'https://api.ellecanada.com/app/uploads/2023/07/canada-music-festivals.jpg';
+            e.target.src = "https://api.ellecanada.com/app/uploads/2023/07/canada-music-festivals.jpg";
           }}
         />
         <div class="m-4">
@@ -76,7 +71,7 @@ const EventListPage = () => {
   return (
     <div className="container mx-auto my-8">
       <h1 className="text-2xl font-semibold mb-4">Event List</h1>
-      <div className="flex flex-wrap justify-between">
+      <div className="grid grid-cols-3 gap-4">
         {events.map((event) => (
           <EventCard key={event.slug} event={event} />
         ))}

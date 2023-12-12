@@ -17,6 +17,7 @@ import BookingPage from "./pages/BookingPage";
 import UsersCRUDPage from "./pages/UsersCRUDPage";
 import VerifyBooking from "./pages/VerifyBooking";
 import EventDashboard from "./pages/Dash";
+import Footer from "./components/Footer";
 
 function App() {
   const { user } = useAuthContext();
@@ -30,13 +31,7 @@ function App() {
             <Route
               path="/"
               element={
-                user && (user?.status === 0 || user?.status === 1) ? (
-                  <EventDashboard />
-                ) : user ? (
-                  <Home />
-                ) : (
-                  <Navigate to="/login" />
-                )
+                user && (user?.status === 0 || user?.status === 1) ? <EventDashboard /> : user ? <Home /> : <Home />
               }
             />
             {/* <Route path="/" element={user ? <Home /> : <Navigate to="/login" />} /> */}
@@ -58,6 +53,7 @@ function App() {
             <Route path="/forgotpassword" element={!user ? <PasswordRecoveryForm /> : <Navigate to="/" />} />
           </Routes>
         </div>
+        {/* <Footer /> */}
       </BrowserRouter>
     </div>
   );

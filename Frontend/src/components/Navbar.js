@@ -4,7 +4,7 @@ import { useLogout } from "../hooks/useLogout";
 import { useAuthContext } from "../hooks/useAuthContext";
 
 const Navbar = () => {
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const location = useLocation();
   const { logout } = useLogout();
   const { user } = useAuthContext();
@@ -14,7 +14,7 @@ const Navbar = () => {
       navigate("/events");
     }
   }, [user, location, navigate]);
-  
+
   const handleClick = () => {
     logout();
     navigate("/login");
@@ -60,6 +60,9 @@ const Navbar = () => {
 
           {!user && (
             <div className="flex space-x-4">
+              <Link to="/" className="hover:text-gray-300">
+                Home
+              </Link>
               <Link to="/login" className="hover:text-gray-300">
                 Login
               </Link>
