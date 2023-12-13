@@ -26,7 +26,7 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <Navbar />
-        <div className="pages">
+        <div className="pages" style={{ minHeight: "85vh" }}>
           <Routes>
             <Route
               path="/"
@@ -53,7 +53,7 @@ function App() {
             <Route path="/forgotpassword" element={!user ? <PasswordRecoveryForm /> : <Navigate to="/" />} />
           </Routes>
         </div>
-        {/* <Footer /> */}
+        <Footer />
       </BrowserRouter>
     </div>
   );

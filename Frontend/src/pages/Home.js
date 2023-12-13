@@ -16,18 +16,18 @@ const Home = () => {
         <div className="container flex flex-col-reverse lg:flex-row items-center gap-12 mt-14 lg:mt-28">
           <div className="flex flex-1 flex-col items-center lg:items-start">
             <h2 className="text-bookmark-blue text-3xl md:text-4 lg:text-5xl text-center lg:text-left mb-6">
-              A Simple Bookmark Manager
+              A Simple Event Manager
             </h2>
             <p className="text-bookmark-grey text-lg text-center lg:text-left mb-6">
-              A clean and simple interface to organize your favourite websites. Open a new browser tab and see your
-              sites load instantly. Try it for free.
+              A clean and simple interface to organize your favourite Events. Open a new browser tab and see your events
+              load instantly. Try it for free.
             </p>
             <div className="flex justify-center flex-wrap gap-6">
               <button type="button" className="btn btn-purple hover:bg-bookmark-white hover:text-black">
-                Get it on Chrome
+                Get movie tickets now
               </button>
               <button type="button" className="btn btn-white hover:bg-bookmark-purple hover:text-white">
-                Get it on Firefox
+                Get live event tickets now
               </button>
             </div>
           </div>
@@ -58,8 +58,8 @@ const Home = () => {
         <div className="sm:w-3/4 lg:w-5/12 mx-auto px-2">
           <h1 className="text-3xl text-center text-bookmark-blue">Features</h1>
           <p className="text-center text-bookmark-grey mt-4">
-            Our aim is to make it quick and easy for you to access your favourite websites. Your bookmarks sync between
-            your devices so you can access them on the go.
+            Our aim is to make it quick and easy for you to access your favourite Events. Your Events sync between your
+            devices so you can access them on the go.
           </p>
         </div>
         <div className="relative mt-20 lg:mt-24">
@@ -68,9 +68,9 @@ const Home = () => {
               <img className="w-5/6 h-5/6 sm:w-3/4 sm:h-3/4 md:w-full md:h-full" src={illustrationFeatures} alt="" />
             </div>
             <div className="flex flex-1 flex-col items-center lg:items-start">
-              <h1 className="text-3xl text-bookmark-blue">Bookmark in one click</h1>
+              <h1 className="text-3xl text-bookmark-blue">Book Tickcets in one click</h1>
               <p className="text-bookmark-grey my-4 text-center lg:text-left sm:w-3/4 lg:w-full">
-                Organize your bookmarks however you like. Our simple drag-and-drop interface gives you complete control
+                Organize your Events however you like. Our simple drag-and-drop interface gives you complete control
                 over how you manage your favourite sites.
               </p>
               <button type="button" className="btn btn-purple hover:bg-bookmark-white hover:text-black">
@@ -101,8 +101,8 @@ const Home = () => {
             <div className="flex flex-1 flex-col items-center lg:items-start">
               <h1 className="text-3xl text-bookmark-blue">Intelligent search</h1>
               <p className="text-bookmark-grey my-4 text-center lg:text-left sm:w-3/4 lg:w-full">
-                Our powerful search feature will help you find saved sites in no time at all. No need to crawl through
-                all of your bookmarks.
+                Our powerful search feature will help you find saved events in no time at all. No need to crawl through
+                all of your Events.
               </p>
               <button type="button" className="btn btn-purple hover:bg-bookmark-white hover:text-black">
                 More Info
@@ -130,10 +130,10 @@ const Home = () => {
               <img className="w-5/6 h-5/6 sm:w-3/4 sm:h-3/4 md:w-full md:h-full" src={illustrationFeatures3} alt="" />
             </div>
             <div className="flex flex-1 flex-col items-center lg:items-start">
-              <h1 className="text-3xl text-bookmark-blue">Share your bookmarks</h1>
+              <h1 className="text-3xl text-bookmark-blue">Share your Events</h1>
               <p className="text-bookmark-grey my-4 text-center lg:text-left sm:w-3/4 lg:w-full">
-                Easily share your bookmarks and collections with others. Create a shareable link that you can send at
-                the click of a button.
+                Easily share your Events and collections with others. Create a shareable link that you can send at the
+                click of a button.
               </p>
               <button type="button" className="btn btn-purple hover:bg-bookmark-white hover:text-black">
                 More Info
@@ -159,7 +159,7 @@ const Home = () => {
 
       <section className="py-20 mt-20">
         <div className="sm:w-3/4 lg:w-5/12 mx-auto px-2">
-          <h1 className="text-3xl text-center text-bookmark-blue">Download the extension</h1>
+          <h1 className="text-3xl text-center text-bookmark-blue">Download the extension coming soon!</h1>
           <p className="text-center text-bookmark-grey mt-4">
             We’ve got more browsers in the pipeline. Please do let us know if you’ve got a favourite you’d like us to
             prioritize.
@@ -262,8 +262,6 @@ const Home = () => {
           </div>
         </div>
       </section>
-
-      
     </>
   );
 };
