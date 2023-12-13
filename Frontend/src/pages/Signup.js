@@ -12,7 +12,7 @@ const Signup = () => {
 
   const validatePassword = (value) => {
     // Password validation: should be a six-digit alphanumeric
-    const regex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
+    const regex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,32}$/;
     return regex.test(value);
   };
 

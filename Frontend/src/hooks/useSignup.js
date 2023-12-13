@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useAuthContext } from "./useAuthContext";
 import Cookies from "js-cookie";
 
-
 export const useSignup = () => {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(null);
@@ -15,7 +14,14 @@ export const useSignup = () => {
     const response = await fetch("/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, email, password, profile: { phone: phoneNumber } }),
+      body: JSON.stringify({
+        username,
+        email,
+        password,
+        first_name: "",
+        last_name: "",
+        profile: { phone: phoneNumber, status: "2" },
+      }),
     });
     const json = await response.json();
 
