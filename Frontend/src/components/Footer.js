@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import logo from "../imgs/logo-bookmark-white.png";
-import { FaReact, FaGithub } from "react-icons/fa";
+import { FaReact, FaGithub, FaInstagram, FaTwitter, FaPinterest } from "react-icons/fa";
 
 const Footer = () => {
   return (
@@ -18,12 +18,10 @@ const Footer = () => {
           </ul>
         </div>
         <div className="flex gap-10 mt-12 md:mt-0">
-          <li>
-            <FaReact size={50} color="blue" />
-          </li>
-          <li>
-            <FaGithub size={50} color="black" />
-          </li>
+          <FaGithub size={50} color="white" />
+          <FaInstagram size={50} color="white" />
+          <FaTwitter size={50} color="white" />
+          <FaPinterest size={50} color="white" />
         </div>
       </div>
     </footer>
